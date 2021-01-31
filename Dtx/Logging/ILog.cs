@@ -28,6 +28,6 @@
 
 		string Parameters { get; set; }
 
-		string ErrorMessages { get; set; }
+		string Exceptions { get; set; }
 	}
 }

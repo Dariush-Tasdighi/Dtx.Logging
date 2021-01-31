@@ -2,48 +2,6 @@
 {
 	public class Log : object, ILog
 	{
-		#region static string GetParametersString(System.Collections.Hashtable parameters)
-		public static string GetParametersString(System.Collections.Hashtable parameters)
-		{
-			if ((parameters == null) || (parameters.Count == 0))
-			{
-				return null;
-			}
-
-			System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder();
-
-			stringBuilder.Append("<parameters>");
-
-			foreach (System.Collections.DictionaryEntry item in parameters)
-			{
-				if (item.Key != null)
-				{
-					stringBuilder.Append("<parameter>");
-
-					stringBuilder.Append($"<key>{ item.Key }</key>");
-
-					if (item.Value == null)
-					{
-						stringBuilder.Append($"<value>NULL</value>");
-					}
-					else
-					{
-						stringBuilder.Append($"<value>{ item.Value }</value>");
-					}
-
-					stringBuilder.Append("</parameter>");
-				}
-			}
-
-			stringBuilder.Append("</parameters>");
-
-			string result =
-				stringBuilder.ToString();
-
-			return result;
-		}
-		#endregion /static string GetParametersString(System.Collections.Hashtable parameters)
-
 		public Log() : base()
 		{
 		}
@@ -74,7 +32,7 @@
 
 		public string Parameters { get; set; }
 
-		public string ErrorMessages { get; set; }
+		public string Exceptions { get; set; }
 
 		public override string ToString()
 		{
@@ -162,13 +120,13 @@
 				stringBuilder.Append($"<{ nameof(Message) }>{ Message }</{ nameof(Message) }>");
 			}
 
-			if (string.IsNullOrWhiteSpace(ErrorMessages))
+			if (string.IsNullOrWhiteSpace(Exceptions))
 			{
-				stringBuilder.Append($"<{ nameof(ErrorMessages) }>NULL</{ nameof(ErrorMessages) }>");
+				stringBuilder.Append($"<{ nameof(Exceptions) }>NULL</{ nameof(Exceptions) }>");
 			}
 			else
 			{
-				stringBuilder.Append($"<{ nameof(ErrorMessages) }>{ ErrorMessages }</{ nameof(ErrorMessages) }>");
+				stringBuilder.Append($"<{ nameof(Exceptions) }>{ Exceptions }</{ nameof(Exceptions) }>");
 			}
 
 			if (string.IsNullOrWhiteSpace(Parameters))

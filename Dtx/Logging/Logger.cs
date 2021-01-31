@@ -2,35 +2,59 @@
 {
 	public abstract class Logger<T> : object, ILogger<T>
 	{
-		protected Logger(Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor) : base()
+		protected Logger(Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor = null) : base()
 		{
+			// **************************************************
+			HttpContextAccessor = httpContextAccessor;
+			// **************************************************
+
+			// **************************************************
 			//if (httpContextAccessor == null)
 			//{
 			//	throw new System.ArgumentNullException(nameof(httpContextAccessor));
 			//}
+			// **************************************************
 
-			//HttpContextAccessor = httpContextAccessor;
-
-			HttpContextAccessor =
-				httpContextAccessor ?? throw new System.ArgumentNullException(nameof(httpContextAccessor));
+			// **************************************************
+			//HttpContextAccessor =
+			//	httpContextAccessor ?? throw new System.ArgumentNullException(nameof(httpContextAccessor));
+			// **************************************************
 		}
 
 		protected Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor { get; set; }
 
-		protected virtual string GetErrorMessages(System.Exception exception)
+		#region GetExceptions(System.Exception exception)
+		protected virtual string GetExceptions(System.Exception exception)
 		{
 			System.Text.StringBuilder result = new System.Text.StringBuilder();
 
 			System.Exception currentException = exception;
 
+			int index = 0;
+
 			while (currentException != null)
 			{
-				if (result.Length != 0)
+				if (index == 0)
 				{
-					result.Append(" - [Inner Exception]: ");
+					result.Append($"<{ nameof(System.Exception) }>");
+				}
+				else
+				{
+					result.Append($"<{ nameof(System.Exception.InnerException) }>");
 				}
 
 				result.Append(currentException.Message);
+
+				if (index == 0)
+				{
+					result.Append($"</{ nameof(System.Exception) }>");
+				}
+				else
+				{
+					result.Append($"</{ nameof(System.Exception.InnerException) }>");
+				}
+
+				index++;
 
 				currentException =
 					currentException.InnerException;
@@ -38,6 +62,45 @@
 
 			return result.ToString();
 		}
+		#endregion /GetExceptions(System.Exception exception)
+
+		#region protected virtual string GetParameters(System.Collections.Hashtable parameters)
+		protected virtual string GetParameters(System.Collections.Hashtable parameters)
+		{
+			if ((parameters == null) || (parameters.Count == 0))
+			{
+				return null;
+			}
+
+			System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder();
+
+			foreach (System.Collections.DictionaryEntry item in parameters)
+			{
+				if (item.Key != null)
+				{
+					stringBuilder.Append("<parameter>");
+
+					stringBuilder.Append($"<key>{ item.Key }</key>");
+
+					if (item.Value == null)
+					{
+						stringBuilder.Append($"<value>NULL</value>");
+					}
+					else
+					{
+						stringBuilder.Append($"<value>{ item.Value }</value>");
+					}
+
+					stringBuilder.Append("</parameter>");
+				}
+			}
+
+			string result =
+				stringBuilder.ToString();
+
+			return result;
+		}
+		#endregion /protected virtual string GetParameters(System.Collections.Hashtable parameters)
 
 		protected void Log
 			(LogLevel level,
@@ -103,11 +166,11 @@
 
 			log.Message = message;
 
-			log.ErrorMessages =
-				GetErrorMessages(exception: exception);
+			log.Exceptions =
+				GetExceptions(exception: exception);
 
 			log.Parameters =
-				Logging.Log.GetParametersString(parameters: parameters);
+				GetParameters(parameters: parameters);
 
 			LogByFavoriteLibrary(log: log, exception: exception);
 
